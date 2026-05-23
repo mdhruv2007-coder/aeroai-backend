@@ -1,0 +1,24 @@
+{
+  "input_file": "/mnt/d/Projects/Personal project 1-AERO AI/MVP Prototype-1/data/processed/cd_train_locked.csv",
+  "total_cases": 28937,
+  "quarantined": 1020,
+  "passed": 27917,
+  "pct_quarantined": 3.525,
+  "pct_passed": 96.475,
+  "gate_criterion": ">=90% cases pass",
+  "gate_PASS": true,
+  "retrain_required": false,
+  "thresholds": {
+    "cd_min": 0.004,
+    "cd_max": 0.18,
+    "ld_max": 130.0
+  },
+  "per_flag_counts": {
+    "flag_cd_low": 169,
+    "flag_cd_high": 851,
+    "flag_cd_nan": 0,
+    "flag_ld_high": 0,
+    "flag_not_converged": 0
+  },
+  "pct_quarantine": 0.0
+}

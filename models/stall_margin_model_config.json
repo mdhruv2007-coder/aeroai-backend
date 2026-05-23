@@ -1,0 +1,17 @@
+{
+  "n_features": 5,
+  "hidden": 128,
+  "n_blocks": 3,
+  "dropout": 0.25,
+  "feat_order": [
+    "m",
+    "p",
+    "thickness",
+    "aoa",
+    "Re"
+  ],
+  "target": "stall_margin_deg",
+  "r2_val": 0.952179,
+  "data_source": "BigFoil NACA-only rows from bigfoil_stall_margins.csv",
+  "note": "Retrained Session C Task 1 \u2014 overwrites previous XFOIL-only weights"
+}

@@ -1,0 +1,54 @@
+# ============================================================
+# AERO.AI MVP1 — root .gitignore
+# ============================================================
+
+# --- Secrets ---
+api/.env
+**/.env
+
+# --- Model files (large + proprietary) ---
+models/*.onnx
+models/*.pt
+models/*.pkl
+
+# --- Raw data (too large for git) ---
+data/raw/bigfoil/
+data/raw/h5_dataset/
+data/raw/xfoil_polars.csv
+data/raw/kanakaero_polars.csv
+
+# --- Processed/locked CSVs (regeneratable, large) ---
+data/processed/*.csv
+
+# --- CFD results (empty now, keep folder via .gitkeep) ---
+cfd_campaign/results/*
+!cfd_campaign/results/.gitkeep
+
+# --- Python cache ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Test artifacts ---
+.pytest_cache/
+htmlcov/
+.coverage
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+*.swo
+
+# --- Jupyter (if any exploratory notebooks) ---
+.ipynb_checkpoints/
+
+# --- CFD cases (generated — 50 LHS setups, not source code) ---
+cfd_campaign/cases/
+
+# --- Raw CFD data files ---
+data/raw/p1_cfd/
+data/raw/unifoil_trans.tab
+data/raw/unifoil_turb.tab

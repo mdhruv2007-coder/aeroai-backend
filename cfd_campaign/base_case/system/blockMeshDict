@@ -1,0 +1,59 @@
+FoamFile { version 2.0; format ascii; class dictionary; location "system"; object blockMeshDict; }
+
+scale 1;
+
+// C-mesh around unit chord NACA airfoil
+// Domain: 20c upstream, 30c downstream, 20c top/bottom
+// Airfoil geometry injected per-case via snappyHexMesh / foamyHexMesh
+// For 2D: single cell in z, front/back = empty
+
+vertices
+(
+    (-20  -20  -0.05)   // 0
+    ( 30  -20  -0.05)   // 1
+    ( 30   20  -0.05)   // 2
+    (-20   20  -0.05)   // 3
+    (-20  -20   0.05)   // 4
+    ( 30  -20   0.05)   // 5
+    ( 30   20   0.05)   // 6
+    (-20   20   0.05)   // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (200 150 1) simpleGrading (1 1 1)
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces ((0 4 7 3) (0 3 2 1));
+    }
+    outlet
+    {
+        type patch;
+        faces ((1 2 6 5));
+    }
+    top
+    {
+        type symmetry;
+        faces ((3 7 6 2));
+    }
+    bottom
+    {
+        type symmetry;
+        faces ((0 1 5 4));
+    }
+    front
+    {
+        type empty;
+        faces ((4 5 6 7));
+    }
+    back
+    {
+        type empty;
+        faces ((0 3 2 1));
+    }
+);

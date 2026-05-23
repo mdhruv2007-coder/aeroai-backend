@@ -1,0 +1,31 @@
+{
+  "model_version": "aero_ai_v2.0_multifidelity",
+  "architecture": "Option A \u2014 3 frozen backbones + 1 RANS adapter",
+  "backbones": [
+    "cl_model",
+    "cm_model",
+    "stall_margin_model"
+  ],
+  "adapter": "rans_adapter",
+  "adapter_input": "256-dim hidden_cl || 5-dim x_scaled = 261 total",
+  "output_order": [
+    "Cl",
+    "Cd",
+    "Cm",
+    "stall_margin"
+  ],
+  "feat_order": [
+    "m",
+    "p",
+    "thickness",
+    "aoa",
+    "Re"
+  ],
+  "r2_cd_val": 0.924693,
+  "r2_cl_val": 0.999271,
+  "gate1_passed": true,
+  "physics_tests": "7/8 passed",
+  "all_physics_pass": false,
+  "stall_correction": "corrected_stall_margin() applied at inference",
+  "mc_dropout": "adapter.train() during inference for uncertainty"
+}

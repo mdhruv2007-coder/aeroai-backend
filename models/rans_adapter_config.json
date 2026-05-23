@@ -1,0 +1,34 @@
+{
+  "hidden_dim": 256,
+  "raw_feat_dim": 5,
+  "extra_feat_dim": 10,
+  "in_dim": 271,
+  "dropout_train": 0.1,
+  "dropout_mc": 0.25,
+  "n_train": 28937,
+  "n_val": 5106,
+  "r2_val": 0.924693,
+  "gate1_passed": true,
+  "backbone": "cl_model",
+  "feat_order": [
+    "m",
+    "p",
+    "thickness",
+    "aoa",
+    "Re"
+  ],
+  "extra_feats": [
+    "cst_0",
+    "cst_1",
+    "cst_2",
+    "cst_3",
+    "cst_4",
+    "cst_5",
+    "cst_6",
+    "cst_7",
+    "max_thickness",
+    "le_radius"
+  ],
+  "architecture": "[271 \u2192 256 \u2192 128 \u2192 64 \u2192 1]",
+  "note": "Option D: adapter input = [256 hidden_cl || 5 x_scaled || 10 CST+geom]"
+}

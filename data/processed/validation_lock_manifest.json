@@ -1,0 +1,40 @@
+{
+  "locked_on": "2026-04-17T14:26:12.023732",
+  "random_seed": 42,
+  "val_fraction": 0.15,
+  "source_files": {
+    "cd_training.csv": {
+      "path": "/mnt/d/Projects/Personal project 1-AERO AI/MVP Prototype-1/data/processed/cd_training.csv",
+      "rows": 34043,
+      "sha256": "0490f65091a3f848384765a50a0d472e48fd598ee250fbb433c3b4a09259905f"
+    },
+    "cl_training.csv": {
+      "path": "/mnt/d/Projects/Personal project 1-AERO AI/MVP Prototype-1/data/processed/cl_training.csv",
+      "rows": 60771,
+      "sha256": "942d38601195cddc9969cf1f04f6c3dc7d8d9471f98737f56740f568882a22b1"
+    }
+  },
+  "output_files": {
+    "cd_train_locked.csv": {
+      "rows": 28937,
+      "sha256": "db73411730944bdd42779a193b5d34ec4c3e86951f9022e5d73dff26e533a6a4"
+    },
+    "cd_val_locked.csv": {
+      "rows": 5106,
+      "sha256": "01b7a8b6f5fdebff245e7b3dc9a2e90fc1f219cfd1ad77b172b1e2f0add0b71a"
+    },
+    "cl_train_locked.csv": {
+      "rows": 51655,
+      "sha256": "561e34c3e98000032b7f5778f6bcf84b226b6038d34c544ad34497815a1054f9"
+    },
+    "cl_val_locked.csv": {
+      "rows": 9116,
+      "sha256": "13af4e80fbb4ac5ef222e54a1451d19630dc24eb1955f7e50e047128228cc78d"
+    }
+  },
+  "contamination_check": {
+    "cd_overlap_rows": 0,
+    "cl_overlap_rows": 0
+  },
+  "golden_rule": "This validation set is locked forever. All new autoloop cases go into TRAIN only. Never add rows to the val CSVs. Report R\u00b2 on val set only \u2014 never on training data."
+}

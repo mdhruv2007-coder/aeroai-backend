@@ -1,0 +1,17 @@
+{
+  "name": "cm_model",
+  "features": [
+    "m",
+    "p",
+    "thickness",
+    "aoa",
+    "Re"
+  ],
+  "target": "Cm",
+  "hidden": 256,
+  "n_blocks": 4,
+  "n_features": 5,
+  "r2_val": 0.998711,
+  "n_train": 22718,
+  "n_val": 4010
+}
