@@ -63,11 +63,11 @@ app = FastAPI(
 
 
 # ------------------------------------------------------------------ #
-#  CORS — allows the Vercel dashboard to call this API               #
+#  CORS — locked to Vercel dashboard (Session F)                      #
 # ------------------------------------------------------------------ #
 app.add_middleware(
     CORSMiddleware,
-    allow_origins  = ["*"],    # locked down after MVP — set to Vercel URL
+    allow_origins  = ["https://aeroai-dashboard.vercel.app"],
     allow_methods  = ["POST", "GET"],
     allow_headers  = ["*"],
 )
