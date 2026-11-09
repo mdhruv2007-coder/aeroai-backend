@@ -1,0 +1,166 @@
+============================================================
+  AERO.AI MVP1 — 02_train_surrogate_multifidelity.py
+  Fix #7: Multi-Fidelity Transfer Learning (Option A)
+============================================================
+  Device : cuda  |  Seed : 42
+  Epochs : 800  |  Patience : 150  |  Dropout : 0.25
+
+  PLAN:
+  1. Load + freeze cl_model, cm_model, stall_margin_model backbones
+  2. Check Cl R² did not regress (cl_val_locked.csv)
+  3. Train RANS adapter on cd_train_locked.csv
+  4. Verify Cd R² >= 0.92 (Gate 1 must not regress)
+  5. Run 8 physics validation tests
+  6. Save aero_ai_v2.0_multifidelity.pt
+
+  ✓ All locked dataset files found
+
+────────────────────────────────────────────────────────────
+  Step 1 — Loading + freezing backbones
+────────────────────────────────────────────────────────────
+  ✓ Loaded cl_model  hidden=256  blocks=4  R²=0.999081  trainable_params=0 (frozen)
+  ✓ Loaded cm_model  hidden=256  blocks=4  R²=0.998711  trainable_params=0 (frozen)
+  ✓ Loaded stall_margin_model  hidden=128  blocks=3  R²=0.952179  trainable_params=0 (frozen)
+
+────────────────────────────────────────────────────────────
+  Cl REGRESSION CHECK (cl_val_locked.csv)
+────────────────────────────────────────────────────────────
+  Cl R² on cl_val_locked.csv : 0.9993  ✅ OK
+  (Backbone is frozen — any regression here means scaler mismatch)
+
+════════════════════════════════════════════════════════════
+  RANS ADAPTER TRAINING  [Option D — CST+geometry features]
+════════════════════════════════════════════════════════════
+  Train: /mnt/d/Projects/Personal project 1-AERO AI/MVP Prototype-1/data/processed/clean_v2/cd_train.csv
+  Val  : /mnt/d/Projects/Personal project 1-AERO AI/MVP Prototype-1/data/processed/clean_v2/cd_val.csv  (LOCKED — never modified)
+  Train rows: 16367  |  Val rows: 2840
+  ✓ RANS-only confirmed in training set
+  ✓ All 10 extra features found: cst_0..7, max_thickness, le_radius
+  ✓ All 10 extra features found: cst_0..7, max_thickness, le_radius
+  Extra feats shape — train: (16367, 10)  val: (2840, 10)
+  Computing backbone hidden representations ...
+  hidden_tr shape  : torch.Size([16367, 256])   (expect [n_train, 256])
+  hidden_val shape : torch.Size([2840, 256])  (expect [n_val, 256])
+  Adapter trainable params: 111,745
+  Adapter input dim: 256 (hidden) + 5 (backbone) + 10 (CST+geom) = 271
+  Adapter architecture: [271 → 256 → 128 → 64 → 1]
+  Training dropout: 0.1  |  MC-inference dropout: 0.25
+
+  Training for up to 800 epochs (patience=150) ...
+  Device: cuda
+
+  Epoch    1/800  val_loss=0.058012  best=0.058012  lr=1.00e-03
+  Epoch   50/800  val_loss=0.048494  best=0.045875  lr=5.05e-04
+  Epoch  100/800  val_loss=0.045151  best=0.044290  lr=1.00e-03
+  Epoch  150/800  val_loss=0.044701  best=0.044087  lr=5.05e-04
+  Epoch  200/800  val_loss=0.043723  best=0.042617  lr=1.00e-03
+  Epoch  250/800  val_loss=0.046328  best=0.042617  lr=5.05e-04
+  Epoch  300/800  val_loss=0.041944  best=0.041568  lr=1.00e-03
+  Epoch  350/800  val_loss=0.040676  best=0.040676  lr=5.05e-04
+  Epoch  400/800  val_loss=0.040890  best=0.040096  lr=1.00e-03
+  Epoch  450/800  val_loss=0.041425  best=0.040096  lr=5.05e-04
+  Epoch  500/800  val_loss=0.040127  best=0.039642  lr=1.00e-03
+  Epoch  550/800  val_loss=0.042365  best=0.039642  lr=5.05e-04
+  Epoch  600/800  val_loss=0.040363  best=0.039642  lr=1.00e-03
+  Early stop at epoch 618  (patience=150 exhausted)
+
+  Adapter Cd R² on cd_val_locked.csv : 0.8868  ✅ GATE 1 PASSES
+  Saved → rans_adapter_weights.pt | rans_adapter_cd_y_scaler.pkl | rans_adapter_extra_feats_scaler.pkl | rans_adapter_config.json
+
+────────────────────────────────────────────────────────────
+  Step 5 — Assembling MultiFidelityAeroAI
+────────────────────────────────────────────────────────────
+  Total param groups — frozen: 112  trainable: 14
+
+  Sanity check (NACA 2412, AoA=6°, Re=1M):
+    Cl=0.8989  Cd=0.02912  Cm=-0.0537  stall_margin=10.03°  L/D=30.87
+    L/D self-check: 30.8720 (must match 30.8720)
+
+════════════════════════════════════════════════════════════
+  8 PHYSICS VALIDATION TESTS
+════════════════════════════════════════════════════════════
+
+  Test 1 — Cl Monotonicity Below Stall (9/10 geometries must pass)
+    NACA 2412  monotone=True  Cl=[-0.188,1.408]
+    NACA 2415  monotone=True  Cl=[-0.190,1.402]
+    NACA 4412  monotone=True  Cl=[0.037,1.544]
+    NACA 0012  monotone=True  Cl=[-0.432,1.212]
+    NACA 4415  monotone=True  Cl=[0.035,1.560]
+    NACA 6412  monotone=True  Cl=[0.257,1.683]
+    NACA 2418  monotone=True  Cl=[-0.192,1.380]
+    NACA 4418  monotone=True  Cl=[0.032,1.552]
+    NACA 6415  monotone=True  Cl=[0.255,1.752]
+    NACA 2612  monotone=True  Cl=[-0.138,1.427]
+  Test 1: ✅ PASS  (10/10 monotone)
+
+  Test 2 — Cd Positivity (0 violations on cd_val_locked.csv)
+  Test 2: ✅ PASS  (0 negative-Cd violations out of 2840 rows)
+
+  Test 3 — Symmetry (NACA 0012 at AoA=0 → |Cl|<0.05, |Cm|<0.02)
+  Test 3: ✅ PASS  Cl=0.00361  Cm=0.00005  (need |Cl|<0.05, |Cm|<0.02)
+
+  Test 4 — L/D Self-Consistency (1000 random inputs, tolerance 0.001)
+  Test 4: ✅ PASS  (0/1000 violations, max diff=0.000000)
+
+  Test 5 — NACA 2412 Benchmark vs RANS reference values
+    AoA= 0.0°  Cl=0.2466 (exp 0.24±0.05)  Cd=0.02176 (exp 0.02±0.01)  ✅
+    AoA= 4.0°  Cl=0.6974 (exp 0.64±0.05)  Cd=0.02124 (exp 0.022±0.01)  ✅
+    AoA= 8.0°  Cl=1.0857 (exp 1.02±0.1)  Cd=0.04490 (exp 0.05±0.02)  ✅
+    AoA=12.0°  Cl=1.4081 (exp 1.35±0.15)  Cd=0.11907 (exp 0.12±0.05)  ✅
+  Test 5: ✅ PASS  (4/4 cases within tolerance)
+
+  Test 6 — Stall Margin NACA 0012 (NASA TM-84245 reference)
+    AoA= 6.0°  stall_margin=9.21°  expected=[7.0,11.0]  warn_expected=False  ✅
+    AoA=10.0°  stall_margin=1.43°  expected=[1.0,4.0]  warn_expected=False  ✅
+    AoA=12.0°  stall_margin=0.00°  expected=[0.0,3.0]  warn_expected=True  ✅
+    AoA=13.0°  stall_margin=0.00°  expected=[0.0,1.0]  warn_expected=True  ✅
+  Test 6: ✅ PASS  (4/4)
+
+  Test 7 — MC Dropout Calibration (confidence vs actual error)
+    Confidence score : 0.8733  avg_Cd_std : 0.087854
+  Test 7: ✅ PASS  (confidence in [0,1] and std>0)
+
+  Test 8 — Cd Monotonicity Above Stall (5 geometries, AoA 10-14°)
+    NACA 2412  Cd_mono=True  Cd=[0.09170→0.15260]
+    NACA 4415  Cd_mono=True  Cd=[0.09790→0.14879]
+    NACA 0012  Cd_mono=True  Cd=[0.09214→0.15208]
+    NACA 6412  Cd_mono=True  Cd=[0.10079→0.16429]
+    NACA 2418  Cd_mono=False  Cd=[0.05776→0.07928]
+  Test 8: ❌ FAIL  (4/5 geometries monotone)
+
+════════════════════════════════════════════════════════════
+  PHYSICS VALIDATION SUMMARY
+════════════════════════════════════════════════════════════
+  ✅  test1_cl_monotone
+  ✅  test2_cd_positive
+  ✅  test3_symmetry
+  ✅  test4_ld_consistency
+  ✅  test5_naca2412
+  ✅  test6_stall_margin
+  ✅  test7_mc_dropout
+  ❌  test8_cd_mono_stall
+
+  ❌ 1 TEST(S) FAILED  (7/8)
+  → DO NOT build the API until all 8 tests pass.
+  → Review failing tests and retrain adapter if needed.
+  ✓ Guard: unified adapter == validated adapter (incl. BatchNorm buffers)
+
+  Saved → aero_ai_v2.1_multifidelity.pt
+  Saved → aero_ai_v2.0_multifidelity_config.json
+
+============================================================
+  MULTI-FIDELITY TRAINING COMPLETE
+============================================================
+  Cl R² (backbone, frozen)   : 0.9993  ✅
+  Cd R² (adapter, retrained) : 0.8868  ✅ GATE 1 PASSED
+  Physics tests              : 7/8  ❌ SOME FAILED
+
+  ❌ 1 physics test(s) failed — do not build the API yet.
+
+  Output files in /mnt/d/Projects/Personal project 1-AERO AI/MVP Prototype-1/models_retrain:
+    aero_ai_v2.1_multifidelity.pt
+    aero_ai_v2.1_multifidelity_config.json
+    rans_adapter_weights.pt
+    rans_adapter_config.json
+    rans_adapter_cd_y_scaler.pkl
+

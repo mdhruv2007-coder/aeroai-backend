@@ -52,3 +52,23 @@ cfd_campaign/cases/
 data/raw/p1_cfd/
 data/raw/unifoil_trans.tab
 data/raw/unifoil_turb.tab
+
+# --- v2.1/v2.2 additions ---
+# nested repo (pushed separately)
+aeroai-dashboard/
+
+# model binaries (the existing rules only cover models/)
+models_fixed/
+models_release/
+models_retrain/
+*.onnx
+*.onnx.data
+*.npz
+audit_out/
+
+# clean split CSVs (the old rule data/processed/*.csv does NOT reach subfolders)
+data/processed/clean_v2/*.csv
+
+# logs (curated ones go in docs/)
+*.log
+!docs/*.log

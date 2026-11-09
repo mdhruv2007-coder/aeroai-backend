@@ -1,0 +1,17 @@
+{
+  "created": "2026-11-09T00:33:13.906703",
+  "seed": 42,
+  "val_fraction_of_airfoils": 0.15,
+  "reason": "Re-lock: original split was by row; 73.3% of val rows also appeared in train (exact duplicates), so reported R2 was inflated. This split removes exact duplicates and holds out whole airfoils.",
+  "train": {
+    "rows": 16367,
+    "airfoils": 714,
+    "sha256": "4bf777b8d00292ef3a5be43e1b9201be0d53dd13bd250357fc0397523abed750"
+  },
+  "val": {
+    "rows": 2840,
+    "airfoils": 127,
+    "sha256": "69d71727795bb60f6ca069165bc8420b97b9c26da48576b7d3dedca5a59854db"
+  },
+  "golden_rule": "Val airfoils never appear in train. Report R2 on this val set only."
+}

@@ -85,8 +85,7 @@ class PredictRequest(BaseModel):
         """
         Return the 10-element CST+geometry array ready for the scaler.
         Uses caller-provided values if all 10 are present.
-        Falls back to naca4_to_extra_feats() otherwise.
-        naca4_to_extra_feats is imported here to avoid circular imports.
+        Otherwise computes them exactly from (m, p, t) via services.cst_features.
         """
         if self.cst_complete:
             return np.array([
@@ -95,9 +94,22 @@ class PredictRequest(BaseModel):
                 self.max_thickness, self.le_radius,
             ], dtype=np.float32)
 
-        # Fallback — approximate from NACA 4-digit params
-        from services.inference import naca4_to_extra_feats
+        # Exact shape features from the NACA digits (same procedure as the training data)
+        from services.cst_features import naca4_to_extra_feats
         return naca4_to_extra_feats(self.m, self.p, self.t)
+
+    def envelope_warnings(self) -> list:
+        """Warnings for inputs the data barely covers (cambered airfoils in the data: m 1-9, p 2-7; AoA >= -4)."""
+        w = []
+        if self.m > 0 and (self.p < 2.0 or self.p > 7.0):
+            w.append("Camber position p is outside 2-7, where cambered training airfoils lie. Treat as extrapolation.")
+        if 0 < self.m < 1.0:
+            w.append("Camber m is between 0 and 1%; training has either symmetric (m=0) or m >= 1. Treat as interpolation.")
+        if self.m > 9.0:
+            w.append("Camber m above 9% is outside the training data. Treat as extrapolation.")
+        if self.aoa < -4.0:
+            w.append("AoA below -4 deg is not represented in the locked validation data (min -4). Treat as extrapolation.")
+        return w
 
     def get_x_raw(self) -> np.ndarray:
         """Return the 5-element backbone input [m, p, t, aoa, Re]."""

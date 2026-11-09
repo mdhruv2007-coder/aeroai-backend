@@ -55,7 +55,7 @@ app = FastAPI(
     title       = "AERO.AI MVP1",
     description = (
         "Aerodynamic coefficient prediction API for NACA 4-digit airfoils. "
-        "Powered by MultiFidelityAeroAI (ONNX) with MC Dropout uncertainty."
+        "Powered by MultiFidelityAeroAI (ONNX). Deterministic: no uncertainty estimate yet."
     ),
     version     = settings.api_version,
     lifespan    = lifespan,

@@ -10,9 +10,9 @@ from pathlib import Path
 
 class Settings(BaseSettings):
     # --- Model paths (relative to project root, overridable via .env) ---
-    model_dir: Path = Path("/mnt/d/Projects/Personal project 1-AERO AI/MVP Prototype-1/models")
+    model_dir: Path = Path("/mnt/d/Projects/Personal project 1-AERO AI/MVP Prototype-1/models_release")
 
-    onnx_model:               str = "aero_ai_v2.0_multifidelity.onnx"
+    onnx_model:               str = "aero_ai_v2.2_multifidelity.onnx"
 
     # Scalers — x/y for each output + adapter extras
     cl_x_scaler:              str = "cl_model_x_scaler.pkl"
@@ -24,11 +24,11 @@ class Settings(BaseSettings):
 
     # --- API settings ---
     api_version:              str = "v1"
-    model_version:            str = "aero_ai_v2.0_multifidelity"
+    model_version:            str = "aero_ai_v2.2_multifidelity"
     host:                     str = "0.0.0.0"
     port:                     int = 8000
 
-    # --- MC Dropout ---
+    # --- Deprecated: kept only so the N_MC_PASSES line in .env does not fail validation ---
     n_mc_passes:              int = 30
 
     # --- Reynolds limits ---
